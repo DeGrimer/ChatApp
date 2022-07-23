@@ -4,11 +4,19 @@ const http = require('http');
 const server = http.createServer(app);
 const { Server } = require('socket.io');
 const { PrismaClient } = require('@prisma/client');
-const io = new Server(server);
 const prisma = new PrismaClient();
+const cors = require('cors');
+app.use(cors());
+
+const io = new Server(server, {
+    cors:  {
+        origin: "http://localhost:3000",
+        methods: ['GET','POST',]
+    },
+});
 
 async function getLastMessage() {
-    let lastTime = Date.now() - (60000*10);
+    let lastTime = Date.now() - (60000*100);
     lastTime = new Date(lastTime).toISOString();
     const info = await prisma.message.findMany({
         where : {
@@ -20,9 +28,9 @@ async function getLastMessage() {
     return info;
 }
 async function main() {
-    app.get('/', (req, res) => {
+    /*app.get('/', (req, res) => {
         res.sendFile(__dirname + '/index.html');
-    });
+    });*/
     
     io.on('connection', async (socket) => {
         console.log('a user connected');
@@ -46,8 +54,8 @@ async function main() {
         });
     })
     
-    server.listen(3000, () =>{
-        console.log('listening on *:3000');
+    server.listen(3001, () =>{
+        console.log('listening on *:3001');
     })
   }
   
