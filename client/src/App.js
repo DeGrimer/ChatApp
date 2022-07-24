@@ -19,20 +19,27 @@ function App() {
     sock.emit('chat message', message, nickname);
   };
 
-  useEffect(() => {
+  function showMessages() {
     sock.on('show message', (result) => {
       const listItems = result.map((result) =>
+      <div key = {result.id}>
         <ListItem>
           <ListItemText
-            sx = {{bgcolor: 'background.paper', color: 'text.primary'}}
+            key = "{result.id}"
+            sx = {{color: 'text.primary'}}
             primary={result.content}
             secondary = {result.nickname + " " + new Date(result.sentAt).toLocaleTimeString()}
           />
           </ListItem>
-);
-
-      setMessageReceived(listItems);
+      </div>
+      );
+  
+    setMessageReceived(listItems);
     })
+  }
+
+  useEffect(() => {
+    showMessages();
   })
   return (
     <div className="App">
@@ -40,7 +47,7 @@ function App() {
       <FormLabel>
         Список сообщений
       </FormLabel>
-      <List 
+      <List
         sx={{width: '100%', overflow: 'auto',
         maxHeight: 400,
         border: 1,
@@ -59,28 +66,28 @@ function App() {
         >
       <div>
         <TextField
-        label="Имя"
-        id="inName"
-        size="small"
-        onChange={(event) => {
-          setNickname(event.target.value);
+          label="Имя"
+          id="nickname"
+          size="small"
+          onChange={(event) => {
+            setNickname(event.target.value);
         }}
         />
       </div>
       <div>
-      <TextField
-        label="Сообщение"
-        id="inMessage"
-        onChange={(event) => {
-          setMessage(event.target.value);
-        }}
-        />
+        <TextField
+            label="Сообщение"
+            id="input"
+            onChange={(event) => {
+              setMessage(event.target.value);
+          }}
+          />
       </div>
       <div className='SendButton'>
-      <Button 
-      variant="contained" 
-      onClick={sendMessage}
-      type="submit">Отправить</Button>
+        <Button 
+          variant="contained" 
+          onClick={sendMessage}
+          type="submit">Отправить</Button>
       </div>
       </Box>
     </div>

@@ -16,7 +16,7 @@ const io = new Server(server, {
 });
 
 async function getLastMessage() {
-    let lastTime = Date.now() - (60000*100);
+    let lastTime = Date.now() - (60000*5);
     lastTime = new Date(lastTime).toISOString();
     const info = await prisma.message.findMany({
         where : {
@@ -27,20 +27,13 @@ async function getLastMessage() {
     });
     return info;
 }
-async function main() {
-    /*app.get('/', (req, res) => {
-        res.sendFile(__dirname + '/index.html');
-    });*/
-    
+async function main() {    
     io.on('connection', async (socket) => {
-        console.log('a user connected');
-        let info = getLastMessage();
-        info.then(function(result) {
-            console.log(result);
+        let lastMessage = getLastMessage();
+        lastMessage.then(function(result) {
             io.emit('show message',result);
         })
         socket.on('disconnect', () => {
-            console.log('user disconnected');
         });
         socket.on('chat message', async (msg, author = 'noname') => {
             await prisma.message.create({
@@ -66,4 +59,3 @@ async function main() {
     .finally(async () => {
       await prisma.$disconnect()
     })
-    //var messag = getLastMessage();
